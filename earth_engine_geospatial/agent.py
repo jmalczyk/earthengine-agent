@@ -24,7 +24,10 @@ def _initialize_earth_engine():
             raise ValueError(
                 "GOOGLE_CLOUD_PROJECT environment variable not set."
             )
-
+        else:
+            print(f"GOOGLE_CLOUD_PROJECT is {_PROJECT_ID}")
+            print(f"GOOGLE_CLOUD_LOCATION is {_LOCATION}")
+        
         scopes = [
             "https://www.googleapis.com/auth/earthengine",
             "https://www.googleapis.com/auth/cloud-platform",

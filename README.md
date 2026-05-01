@@ -27,7 +27,7 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 1. **Prerequisites**
    * Python 3.10+
    * [uv](https://docs.astral.sh/uv/) for dependency management
-   * A Google Cloud project with the Earth Engine API and Vertex AI API enabled
+   * A Google Cloud project with the Earth Engine API, Vertex AI API, and Google Maps Platform API enabled (Geocoding and the Dynamic Maps JavaScript should be enabled).
    * [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
 2. **Installation**
@@ -40,9 +40,12 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 3. **Configuration**
    Copy `.env.example` to `.env` and fill in your project ID:
 
+  
+
    ```bash
    cp .env.example .env
    ```
+
 
    Authenticate:
 
@@ -66,7 +69,7 @@ Or on a web interface:
 adk web
 ```
 
-In Google Cloud Shell, you can run the agent using the following command:
+In Google Cloud Shell, run the agent using the following command:
 
 ```bash
 adk web --allow_origins 'regex:https://.*.cloudshell.dev' 
