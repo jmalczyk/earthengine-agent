@@ -3,6 +3,9 @@
 import functools
 import logging
 import os
+import dotenv
+
+dotenv.load_dotenv()
 
 import ee
 import google
