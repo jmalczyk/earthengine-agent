@@ -5,16 +5,12 @@
 This directory contains a [Google Earth Engine](https://earthengine.google.com/)
 enabled ADK agent implemented as a simple chatbot.
 
-The agent has a single tool that uses the [AlphaEarth Satellite Embeddings
-dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL)
-to compute the area of annual change between 2017-2025 in a geometry provided by
-the user. The geometry is provided as GeoJSON text through the chat interface.
+The agent has tools to:
+- Compute the area of annual change between 2017-2025 in a geometry provided by the user, using the [AlphaEarth Satellite Embeddings dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL).
+- Generate an Earth Engine XYZ tile URL pattern detailing the magnitude of change.
+- Create an interactive map HTML file with layer controls (opacity and visibility) and render it in the ADK output.
 
-The tool converts the GeoJSON to an `ee.Geometry` and sends it to the Earth
-Engine server for processing. The results of the computation are returned from
-the server as a JSON dictionary with years for keys and square meters of change
-as values. The agent uses these data and the coordinates in the geometry to
-reason about land cover change and report back to the user.
+The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engine server for processing. The agent uses the computation results and the coordinates in the geometry to reason about land cover change and provide an interactive visualization.
 
 ## Agent Details
 
@@ -23,7 +19,7 @@ reason about land cover change and report back to the user.
 | **Interaction Type** | Conversational |
 | **Complexity** | Easy |
 | **Agent Type** | Single Agent |
-| **Components** | Tools: Earth Engine |
+| **Components** | Tools: Earth Engine, Interactive Map |
 | **Vertical** | Geospatial |
 
 ## Setup and Installation
