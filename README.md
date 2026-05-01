@@ -66,6 +66,13 @@ Or on a web interface:
 adk web
 ```
 
+In Google Cloud Shell, you can run the agent using the following command:
+
+```bash
+adk web --allow_origins 'regex:https://.*.cloudshell.dev' 
+```
+
+
 Select `earth_engine_geospatial` from the dropdown.
 
 ## Example Interaction
