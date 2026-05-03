@@ -62,17 +62,25 @@ echo "Generating Google Maps API Key..."
 EXISTING_KEY=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(name)" 2>/dev/null || true)
 
 if [ -z "$EXISTING_KEY" ]; then
-    gcloud services api-keys create --display-name="Earth Engine Agent Key" \
+    echo "Attempting to create API key..."
+    if ! gcloud services api-keys create --display-name="Earth Engine Agent Key" \
         --api-target=service=geocoding-backend.googleapis.com \
-        --api-target=service=maps-backend.googleapis.com
+        --api-target=service=maps-backend.googleapis.com; then
+        echo "Error: Failed to create API key. This may be due to authentication issues."
+        echo "Please run the following command manually in Cloud Shell and then restart this script:"
+        echo "  gcloud services api-keys create --display-name=\"Earth Engine Agent Key\" --api-target=service=geocoding-backend.googleapis.com --api-target=service=maps-backend.googleapis.com"
+        exit 1
+    fi
 fi
 
 # Get the key string
+echo "Retrieving API key string..."
 KEY_STRING=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(keyString)" | head -n 1)
 
-if [ -z "$KEY_STRING" ]; then
-    echo "Warning: Could not automatically retrieve the API key string."
-    KEY_STRING="YOUR_API_KEY"
+if [ -z "$KEY_STRING" ] || [ "$KEY_STRING" = "YOUR_API_KEY" ]; then
+    echo "Error: Could not retrieve the API key string."
+    echo "Please run 'gcloud services api-keys list' manually and add the key string to .env as GOOGLE_MAPS_API_KEY."
+    exit 1
 fi
 
 # 6. Configure .env
