@@ -81,7 +81,7 @@ def get_change_year_image(threshold: float):
     return changes
 
 
-def get_annual_change_dictionary(geometry: ee.Geometry, scale: int = 10) -> ee.Dictionary:
+def get_annual_change_dictionary(geometry: ee.Geometry, scale: int = 100) -> ee.Dictionary:
     """Gets a dictionary of annual change areas within a given geometry.
 
     This function calculates the total area (in square meters) for each year
