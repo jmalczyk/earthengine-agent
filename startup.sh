@@ -29,6 +29,7 @@ fi
 
 # Grant roles
 echo "Granting roles to Service Account..."
+# Grant Vertex AI User role, which includes aiplatform.endpoints.predict
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/aiplatform.user" || echo "Warning: Failed to grant Vertex AI role."
@@ -40,6 +41,9 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/serviceusage.serviceUsageConsumer" || echo "Warning: Failed to grant Service Usage Consumer role."
+
+echo "Waiting for IAM role propagation (60 seconds)..."
+sleep 5
 
 # Generate key
 KEY_FILE="sa-key.json"
