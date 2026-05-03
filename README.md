@@ -54,6 +54,63 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
    ```
    You may also need to run `earthengine authenticate`.
 
+## Running in Google Cloud Shell
+
+If you are running this agent in Google Cloud Shell, you can use the following instructions to set up your environment. These instructions are designed to be easily followed by automated assistants like Gemini-CLI.
+
+### 1. Enable Necessary APIs
+
+Run the following command to enable all required APIs for this agent:
+
+```bash
+gcloud services enable earthengine.googleapis.com \
+                       aiplatform.googleapis.com \
+                       geocoding-backend.googleapis.com \
+                       maps-backend.googleapis.com
+```
+
+### 2. Setup Local Environment
+
+Clone the repository and set up the dependencies. If `uv` is not available in your Cloud Shell environment, you can use `pip` to install the dependencies in editable mode:
+
+```bash
+git clone https://github.com/google/adk-samples.git
+cd adk-samples/python/agents/earth-engine-geospatial
+
+# Using uv (recommended if available)
+uv sync
+
+# Fallback using pip
+python3 -m venv .venv
+./.venv/bin/pip install -e .
+```
+
+### 3. Generate API Key for Google Maps
+
+Generate a new API key for the Google Maps Platform:
+
+```bash
+gcloud services api-keys create --display-name="Earth Engine Agent Key"
+```
+
+To get the actual key string, list your keys and find the one you just created:
+
+```bash
+gcloud services api-keys list
+```
+
+Copy the key string and add it to your `.env` file as `GOOGLE_MAPS_API_KEY`.
+
+### 4. Authentication
+
+Authenticate your session:
+
+```bash
+gcloud auth application-default login
+```
+
+You may also need to run `earthengine authenticate` if prompted by the agent.
+
 ## Running the Agent
 
 ADK provides convenient ways to bring up agents locally and interact with them.
