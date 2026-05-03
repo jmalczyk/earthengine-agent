@@ -59,7 +59,21 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 
 ## Running in Google Cloud Shell
 
-If you are running this agent in Google Cloud Shell, you can use the following instructions to set up your environment. These instructions are designed to be easily followed by automated assistants like Gemini-CLI.
+If you are running this agent in Google Cloud Shell, you can use the following instructions to set up your environment.
+
+### Quick Start (Automated Setup)
+
+You can use the provided startup script to automate the setup process (enabling APIs, installing dependencies, generating the API key, and configuring `.env`):
+
+```bash
+./startup.sh
+```
+
+*Note: You will still need to authenticate (see step 4 below).*
+
+### Manual Setup
+
+These instructions are designed to be easily followed by automated assistants like Gemini-CLI.
 
 ### 1. Enable Necessary APIs
 

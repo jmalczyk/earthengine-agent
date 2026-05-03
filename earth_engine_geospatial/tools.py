@@ -96,6 +96,7 @@ def get_annual_change_dictionary(geometry: ee.Geometry, scale: int = 100) -> ee.
         An ee.Dictionary where keys are years (as strings) and values are the
         total area in square meters for which change was detected in that year.
     """
+    scale = 100 # pin the starting compute scale to 100 for demo
     threshold = np.pi / 4  # Arbitrary.
     change_year_image = get_change_year_image(threshold)
     change_year_areas = change_year_image.gt(0).multiply(ee.Image.pixelArea())
