@@ -1,5 +1,7 @@
 # Earth Engine Geospatial Agent
 
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/jmalczyk/earthengine-agent.git)
+
 ## Overview
 
 This directory contains a [Google Earth Engine](https://earthengine.google.com/)
