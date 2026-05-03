@@ -16,15 +16,13 @@ from google.cloud import aiplatform
 
 env_values = dotenv.dotenv_values(".env")
 _PROJECT_ID = env_values.get("GOOGLE_CLOUD_PROJECT")
-_LOCATION = env_values.get("GOOGLE_CLOUD_LOCATION")
 
 if not _PROJECT_ID:
     raise ValueError("GOOGLE_CLOUD_PROJECT must be set in .env file.")
 if "cloudshell" in _PROJECT_ID:
     raise ValueError("Detected cloudshell in project ID. Please set a valid project ID in .env.")
 
-if not _LOCATION:
-    raise ValueError("GOOGLE_CLOUD_LOCATION must be set in .env file.")
+_LOCATION = "global"
 
 
 @functools.cache
@@ -67,7 +65,7 @@ _initialize_earth_engine()
 
 root_agent = llm_agent.Agent(
     name="ee_agent",
-    model="gemini-3.1-pro-preview",
+    model="gemini-3-flash-preview",
     description="Agent to answer geo questions using Google Earth Engine.",
     tools=[
         tools.get_2017_2025_annual_changes,
