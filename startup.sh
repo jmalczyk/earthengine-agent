@@ -5,6 +5,16 @@ set -e
 
 echo "Starting setup for Earth Engine Geospatial Agent in Cloud Shell..."
 
+# Clone the repository if not already in it
+REPO_URL="https://github.com/jmalczyk/earthengine-agent.git"
+REPO_DIR="earthengine-agent"
+
+if [ ! -d ".git" ]; then
+    echo "Not in a git repository. Cloning $REPO_URL..."
+    git clone $REPO_URL
+    cd $REPO_DIR
+fi
+
 # 1. Get Project ID
 PROJECT_ID=$(gcloud config get-value project)
 echo "Using Project ID: $PROJECT_ID"
