@@ -126,11 +126,13 @@ Or on a web interface:
 adk web
 ```
 
-In Google Cloud Shell, run the agent using the following command:
+In Google Cloud Shell, you need to handle CORS issues because the web interface is accessed via a Cloud Shell web preview URL. Run the agent using the following command to allow requests from Cloud Shell origins:
 
 ```bash
-adk web --allow_origins 'regex:https://.*.cloudshell.dev' 
+adk web --allow_origins 'regex:https://.*.cloudshell.dev'
 ```
+
+This flag tells the ADK web server to accept requests from your Cloud Shell instance, preventing CORS blocked errors in the browser.
 
 
 Select `earth_engine_geospatial` from the dropdown.
