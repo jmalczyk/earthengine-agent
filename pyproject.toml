@@ -12,6 +12,7 @@ dependencies = [
     "numpy",
     "google-auth",
     "google-api-core",
+    "geeviz",
 ]
 
 [dependency-groups]

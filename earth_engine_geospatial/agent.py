@@ -14,6 +14,7 @@ from google.adk.agents import llm_agent
 from . import prompt, tools
 
 _PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
 
 
 @functools.cache
@@ -57,8 +58,9 @@ root_agent = llm_agent.Agent(
     tools=[
         tools.get_2017_2025_annual_changes,
         tools.generate_geojson_for_location,
-        tools.generate_change_map_image,
-        tools.create_interactive_map,
+        tools.visualize_change_with_geeviz,
+        tools.visualize_data_with_geeviz,
+        tools.call_geeviz_mcp,
     ],
 
     instruction=prompt.root_agent_prompt,
