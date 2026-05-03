@@ -37,6 +37,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/earthengine.viewer" || echo "Warning: Failed to grant Earth Engine role."
 
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/serviceusage.serviceUsageConsumer" || echo "Warning: Failed to grant Service Usage Consumer role."
+
 # Generate key
 KEY_FILE="sa-key.json"
 echo "Generating Service Account key..."
