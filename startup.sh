@@ -75,7 +75,8 @@ fi
 
 # Get the key string
 echo "Retrieving API key string..."
-KEY_STRING=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(keyString)" | head -n 1)
+KEY_ID=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(name)" | head -n 1)
+KEY_STRING=$(gcloud alpha services api-keys get-key-string $KEY_ID | head -n 1)
 
 if [ -z "$KEY_STRING" ] || [ "$KEY_STRING" = "YOUR_API_KEY" ]; then
     echo "Error: Could not retrieve the API key string."
