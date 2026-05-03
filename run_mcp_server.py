@@ -1,6 +1,9 @@
 import ee
 import os
 import sys
+import dotenv
+
+dotenv.load_dotenv()
 
 # Initialize EE to prevent geeViz from printing interactive prompts to stdout
 project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "gmp-demos-483421")

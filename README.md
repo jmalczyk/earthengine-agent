@@ -159,6 +159,16 @@ In Google Cloud Shell, you need to handle CORS issues because the web interface 
 adk web --allow_origins 'regex:https://.*.cloudshell.dev'
 ```
 
+### Convenience Script
+
+If you need to restart the servers (both the geeViz MCP server and the ADK web server), you can use the provided convenience script:
+
+```bash
+./restart_servers.sh
+```
+
+This script will kill any running instances of the servers and start them again.
+
 This flag tells the ADK web server to accept requests from your Cloud Shell instance, preventing CORS blocked errors in the browser.
 
 
