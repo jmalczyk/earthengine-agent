@@ -90,7 +90,7 @@ fi
 # Get the key string
 echo "Retrieving API key string..."
 KEY_ID=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(name)" | head -n 1)
-KEY_STRING=$(gcloud alpha services api-keys get-key-string $KEY_ID | head -n 1)
+KEY_STRING=$(gcloud alpha services api-keys get-key-string $KEY_ID | head -n 1 | sed 's/^[Kk]ey[Ss]tring:[[:space:]]*//')
 
 if [ -z "$KEY_STRING" ] || [ "$KEY_STRING" = "YOUR_API_KEY" ]; then
     echo "Error: Could not retrieve the API key string."
@@ -105,7 +105,18 @@ cp .env.example .env
 # Update variables in .env
 sed -i "s|GOOGLE_CLOUD_PROJECT=.*|GOOGLE_CLOUD_PROJECT=\"$PROJECT_ID\"|" .env
 sed -i "s|GOOGLE_MAPS_API_KEY=.*|GOOGLE_MAPS_API_KEY=\"$KEY_STRING\"|" .env
-sed -i "s|GEEVIZ_MCP_URL=.*|GEEVIZ_MCP_URL=\"https://9001-cs-[PROJECT_HASH].cloudshell.dev/mcp\"|" .env
+# Configure GEEVIZ_MCP_URL
+# Try to derive it from WEB_HOST in Cloud Shell
+if [ -n "$WEB_HOST" ]; then
+    PROJECT_HASH=$(echo $WEB_HOST | sed 's/^[^-]*-cs-//')
+    GEEVIZ_URL="https://9001-cs-$PROJECT_HASH/mcp"
+else
+    GEEVIZ_URL="https://9001-cs-[PROJECT_HASH].cloudshell.dev/mcp"
+    echo "Warning: WEB_HOST not set. Could not automatically determine Cloud Shell hash."
+    echo "Please manually replace [PROJECT_HASH] in .env with your actual Cloud Shell Web Preview hash."
+fi
+
+sed -i "s|GEEVIZ_MCP_URL=.*|GEEVIZ_MCP_URL=\"$GEEVIZ_URL\"|" .env
 
 # Append credentials path
 echo "GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\"" >> .env
