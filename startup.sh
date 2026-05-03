@@ -14,9 +14,36 @@ echo "Enabling required APIs..."
 gcloud services enable earthengine.googleapis.com \
                        aiplatform.googleapis.com \
                        geocoding-backend.googleapis.com \
-                       maps-backend.googleapis.com
+                       maps-backend.googleapis.com \
+                       iam.googleapis.com
 
-# 3. Setup Local Environment
+# 3. Create Service Account and Credentials
+echo "Creating Service Account and Credentials..."
+SA_NAME="ee-agent-sa"
+SA_EMAIL="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+
+# Create SA if it doesn't exist
+if ! gcloud iam service-accounts describe $SA_EMAIL --project=$PROJECT_ID &>/dev/null; then
+    gcloud iam service-accounts create $SA_NAME --display-name="Earth Engine Agent SA" --project=$PROJECT_ID
+fi
+
+# Grant roles
+echo "Granting roles to Service Account..."
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/aiplatform.user" || echo "Warning: Failed to grant Vertex AI role."
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/earthengine.viewer" || echo "Warning: Failed to grant Earth Engine role."
+
+# Generate key
+KEY_FILE="sa-key.json"
+echo "Generating Service Account key..."
+gcloud iam service-accounts keys create $KEY_FILE \
+    --iam-account=$SA_EMAIL --project=$PROJECT_ID
+
+# 4. Setup Local Environment
 echo "Setting up dependencies..."
 if command -v uv &> /dev/null; then
     uv sync
@@ -26,7 +53,7 @@ else
     ./.venv/bin/pip install -e .
 fi
 
-# 4. Generate API Key
+# 5. Generate API Key for Maps
 echo "Generating Google Maps API Key..."
 EXISTING_KEY=$(gcloud services api-keys list --filter="displayName='Earth Engine Agent Key'" --format="value(name)" 2>/dev/null || true)
 
@@ -44,18 +71,23 @@ if [ -z "$KEY_STRING" ]; then
     KEY_STRING="YOUR_API_KEY"
 fi
 
-# 5. Configure .env
+# 6. Configure .env
 echo "Configuring .env file..."
 cp .env.example .env
 
 # Update variables in .env
 sed -i "s|GOOGLE_CLOUD_PROJECT=.*|GOOGLE_CLOUD_PROJECT=\"$PROJECT_ID\"|" .env
 sed -i "s|GOOGLE_MAPS_API_KEY=.*|GOOGLE_MAPS_API_KEY=\"$KEY_STRING\"|" .env
+sed -i "s|GEEVIZ_MCP_URL=.*|GEEVIZ_MCP_URL=\"https://9001-cs-[PROJECT_HASH].cloudshell.dev/mcp\"|" .env
 
-# 6. Start Servers
+# Append credentials path
+echo "GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\"" >> .env
+
+# 7. Start Servers
 echo "Starting geeViz MCP server in the background..."
 export GOOGLE_CLOUD_PROJECT="$PROJECT_ID"
 export GOOGLE_MAPS_API_KEY="$KEY_STRING"
+export GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE"
 
 if [ -d ".venv" ]; then
     .venv/bin/python3 run_mcp_server.py &
@@ -68,6 +100,7 @@ sleep 5
 
 echo "Starting ADK web server..."
 echo "Once started, click the Web Preview button in Cloud Shell to access the agent."
+echo "IMPORTANT: You must manually replace [PROJECT_HASH] in your .env file with your actual Cloud Shell Web Preview hash for geeViz to work correctly."
 
 if [ -d ".venv" ]; then
     .venv/bin/adk web --allow_origins 'regex:https://.*.cloudshell.dev'
