@@ -5,7 +5,7 @@ import logging
 import os
 import dotenv
 
-dotenv.load_dotenv()
+dotenv.load_dotenv(override=True)
 
 import ee
 import google
