@@ -22,7 +22,7 @@ if not _PROJECT_ID:
 if "cloudshell" in _PROJECT_ID:
     raise ValueError("Detected cloudshell in project ID. Please set a valid project ID in .env.")
 
-_LOCATION = "global"
+_LOCATION = "us-central1"
 
 
 @functools.cache
