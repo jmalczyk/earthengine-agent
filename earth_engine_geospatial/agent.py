@@ -14,8 +14,17 @@ from google.adk.agents import llm_agent
 from . import prompt, tools
 from google.cloud import aiplatform
 
-_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
-_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
+env_values = dotenv.dotenv_values(".env")
+_PROJECT_ID = env_values.get("GOOGLE_CLOUD_PROJECT")
+_LOCATION = env_values.get("GOOGLE_CLOUD_LOCATION")
+
+if not _PROJECT_ID:
+    raise ValueError("GOOGLE_CLOUD_PROJECT must be set in .env file.")
+if "cloudshell" in _PROJECT_ID:
+    raise ValueError("Detected cloudshell in project ID. Please set a valid project ID in .env.")
+
+if not _LOCATION:
+    raise ValueError("GOOGLE_CLOUD_LOCATION must be set in .env file.")
 
 
 @functools.cache
@@ -45,9 +54,9 @@ def _initialize_earth_engine():
             "Earth Engine initialized successfully for project: %s", _PROJECT_ID
         )
         
-        # Initialize aiplatform with the project ID for quota purposes
-        aiplatform.init(project=_PROJECT_ID)
-        logging.info("Vertex AI initialized successfully for project: %s", _PROJECT_ID)
+        # Initialize aiplatform with the project ID and location
+        aiplatform.init(project=_PROJECT_ID, location=_LOCATION)
+        logging.info("Vertex AI initialized successfully for project: %s in region: %s", _PROJECT_ID, _LOCATION)
 
     except Exception as e:
         logging.exception("Failed to initialize Earth Engine: %s", e)

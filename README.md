@@ -27,7 +27,7 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 1. **Prerequisites**
    * Python 3.10+
    * [uv](https://docs.astral.sh/uv/) for dependency management
-   * A Google Cloud project with the Earth Engine API, Vertex AI API, and Google Maps Platform API enabled (Geocoding and the Dynamic Maps JavaScript should be enabled).
+   * A Google Cloud project with the Earth Engine API, Vertex AI API, and Google Maps Platform APIs enabled (**Geocoding API** and **Maps JavaScript API**).
    * [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
 
 2. **Installation**
@@ -60,7 +60,7 @@ If you are running this agent in Google Cloud Shell, you can use the following i
 
 ### 1. Enable Necessary APIs
 
-Run the following command to enable all required APIs for this agent:
+Run the following command to enable all required APIs for this agent (Earth Engine, Vertex AI, Geocoding API, and Maps JavaScript API):
 
 ```bash
 gcloud services enable earthengine.googleapis.com \
@@ -87,10 +87,12 @@ python3 -m venv .venv
 
 ### 3. Generate API Key for Google Maps
 
-Generate a new API key for the Google Maps Platform:
+Generate a new API key for the Google Maps Platform, restricting it to the required APIs for security:
 
 ```bash
-gcloud services api-keys create --display-name="Earth Engine Agent Key"
+gcloud services api-keys create --display-name="Earth Engine Agent Key" \
+    --api-target=service=geocoding-backend.googleapis.com \
+    --api-target=service=maps-backend.googleapis.com
 ```
 
 To get the actual key string, list your keys and find the one you just created:
