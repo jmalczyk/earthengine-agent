@@ -453,7 +453,7 @@ async def call_geeviz_mcp(tool_name: str, arguments: dict) -> Any:
     Returns:
         Any: The result of the tool call.
     """
-    url = "http://127.0.0.1:9001/mcp"
+    url = os.environ.get("GEEVIZ_MCP_URL", "http://127.0.0.1:9001/mcp")
     async with streamable_http_client(url) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
@@ -479,6 +479,10 @@ gv.Map.addLayer(obj, {viz_params}, "{name}")
 """
     await call_geeviz_mcp("run_code", {"code": code})
     url = await call_geeviz_mcp("map_control", {"action": "view"})
+    mcp_url = os.environ.get("GEEVIZ_MCP_URL")
+    if mcp_url and (url.startswith("http://127.0.0.1:9001") or url.startswith("http://localhost:9001")):
+        base_url = mcp_url.replace("/mcp", "")
+        url = url.replace("http://127.0.0.1:9001", base_url).replace("http://localhost:9001", base_url)
     return f"Layer '{name}' added to geeViz map. View it at: {url}"
 
 async def visualize_change_with_geeviz(geometry: ee.Geometry | str) -> str:
@@ -531,6 +535,10 @@ gv.Map.addLayer(magnitude_image, viz_params, "Change Magnitude")
 """
     await call_geeviz_mcp("run_code", {"code": code})
     url = await call_geeviz_mcp("map_control", {"action": "view"})
+    mcp_url = os.environ.get("GEEVIZ_MCP_URL")
+    if mcp_url and (url.startswith("http://127.0.0.1:9001") or url.startswith("http://localhost:9001")):
+        base_url = mcp_url.replace("/mcp", "")
+        url = url.replace("http://127.0.0.1:9001", base_url).replace("http://localhost:9001", base_url)
     return f"Change magnitude map generated. View it at: {url}"
 
 

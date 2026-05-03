@@ -38,13 +38,17 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
    ```
 
 3. **Configuration**
-   Copy `.env.example` to `.env` and fill in your project ID:
-
-  
+   Copy `.env.example` to `.env` and fill in the required values. Ensure that automated tools like Gemini-CLI generate the correct values for all configurations and do NOT rename variables:
 
    ```bash
    cp .env.example .env
    ```
+
+   Fill in the following variables in `.env`:
+   * `GOOGLE_CLOUD_PROJECT`: Your Google Cloud Project ID.
+   * `GOOGLE_CLOUD_LOCATION`: The region for Vertex AI model calls (e.g., `us-central1`).
+   * `GOOGLE_MAPS_API_KEY`: Your Google Maps API key (with Geocoding and Maps JavaScript APIs enabled).
+   * `GEEVIZ_MCP_URL`: The URL for the geeViz MCP server. If you are using Google Cloud Shell, set this to the web preview URL for port 9001 (e.g., `https://9001-cs-[PROJECT_HASH].cloudshell.dev/mcp`) to ensure access through the web preview.
 
 
    Authenticate:
