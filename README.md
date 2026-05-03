@@ -63,7 +63,13 @@ If you are running this agent in Google Cloud Shell, you can use the following i
 
 ### Quick Start (Automated Setup)
 
-You can use the provided startup script to automate the setup process (enabling APIs, installing dependencies, generating the API key, and configuring `.env`):
+You can clone the repository and run the startup script in a single command in Cloud Shell:
+
+```bash
+git clone https://github.com/jmalczyk/earthengine-agent.git && cd earthengine-agent && ./startup.sh
+```
+
+Alternatively, if you are already in the cloned repository directory:
 
 ```bash
 ./startup.sh
