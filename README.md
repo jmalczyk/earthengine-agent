@@ -249,6 +249,47 @@ You can request textual representations of other server objects
 as images. See [this guide](https://developers.google.com/earth-engine/guides/data_extraction)
 for examples of programmatically extracting image data.
 
+### Example: DOE National Lab Researcher
+
+A researcher at a Department of Energy (DOE) national lab might want to analyze land surface temperature around energy infrastructure to study thermal impacts or site potential.
+
+Here is an example of a new tool that computes the average land surface temperature using the MODIS dataset:
+
+```python
+@retry_async.AsyncRetry(deadline=60)
+async def get_average_surface_temperature(
+    geojson: str,
+    start_date: str,
+    end_date: str
+) -> dict[str, Any]:
+    """Gets the average land surface temperature within a geometry for a given date range.
+
+    Args:
+        geojson (str): A JSON string representing a GeoJSON geometry.
+        start_date (str): Start date (YYYY-MM-DD).
+        end_date (str): End date (YYYY-MM-DD).
+
+    Returns:
+        A dictionary with the average temperature.
+    """
+    region = ee.Geometry(json.loads(geojson))
+    collection = ee.ImageCollection("MODIS/061/MOD11A1").filterBounds(region).filterDate(start_date, end_date).select('LST_Day_1km')
+    
+    mean_image = collection.mean()
+    # Scale factor for MODIS LST is 0.02
+    mean_temp = mean_image.multiply(0.02).reduceRegion(
+        reducer=ee.Reducer.mean(),
+        geometry=region,
+        scale=1000
+    )
+    return await asyncio.to_thread(mean_temp.getInfo)
+```
+
+To add this to the agent:
+1. Add the function to `earth_engine_geospatial/tools.py`.
+2. Import and add the function to the `tools` list in `earth_engine_geospatial/agent.py`.
+3. Update the instructions in `earth_engine_geospatial/prompt.py` to tell the agent when and how to use this new tool.
+
 ## Disclaimer
 
 This agent sample is provided for illustrative purposes only and is not intended
