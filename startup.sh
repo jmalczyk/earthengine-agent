@@ -16,7 +16,10 @@ if [ ! -d ".git" ]; then
 fi
 
 # 1. Get Project ID
-PROJECT_ID=$(gcloud config get-value project)
+if [ -z "$PROJECT_ID" ]; then
+    echo "PROJECT_ID not set. Detecting project ID..."
+    PROJECT_ID=$(gcloud projects list --format="value(projectId)" | grep -v "qwiklabs-resources" | head -n 1)
+fi
 echo "Using Project ID: $PROJECT_ID"
 
 # 2. Enable Necessary APIs
