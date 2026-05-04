@@ -9,6 +9,7 @@ enabled ADK agent implemented as a simple chatbot.
 
 The agent has tools to:
 - Compute the area of annual change between 2017-2025 in a geometry provided by the user, using the [AlphaEarth Satellite Embeddings dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL).
+- Measure land cover area by type for years 2018-2025 using the [Dynamic World dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_DYNAMICWORLD_V1) to provide more context about detected changes.
 - Generate an Earth Engine XYZ tile URL pattern detailing the magnitude of change.
 - Create an interactive map HTML file with layer controls (opacity and visibility) and render it in the ADK output.
 
