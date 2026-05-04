@@ -285,10 +285,50 @@ async def get_average_surface_temperature(
     return await asyncio.to_thread(mean_temp.getInfo)
 ```
 
-To add this to the agent:
-1. Add the function to `earth_engine_geospatial/tools.py`.
-2. Import and add the function to the `tools` list in `earth_engine_geospatial/agent.py`.
-3. Update the instructions in `earth_engine_geospatial/prompt.py` to tell the agent when and how to use this new tool.
+To modify the agent, follow these steps to add the new tool and update the instructions:
+
+#### 1. Add the Tool to `earth_engine_geospatial/tools.py`
+Append the `get_average_surface_temperature` function to the end of the file.
+
+#### 2. Register the Tool in `earth_engine_geospatial/agent.py`
+Add `tools.get_average_surface_temperature` to the `tools` list in the `llm_agent.Agent` initialization:
+
+```python
+    tools=[
+        tools.get_2017_2025_annual_changes,
+        tools.generate_geojson_for_location,
+        tools.generate_change_map_image,
+        tools.create_interactive_map,
+        tools.get_average_surface_temperature, # Add this line
+    ],
+```
+
+#### 3. Update Prompt in `earth_engine_geospatial/prompt.py`
+Replace the content of `prompt.py` with the following, which adds instructions for the new tool:
+
+```python
+root_agent_prompt = """
+You are an expert geospatial analyst specializing in Google Earth Engine.
+Use the `get_2017_2025_annual_changes` tool to detect annual changes in geometries.
+Areas are provided to you as places, regions, or GeoJSON geometries.
+If the user provides a location name instead of GeoJSON, use the `generate_geojson_for_location` tool to get the GeoJSON for that location.
+The outputs from the `get_2017_2025_annual_changes` tool are a dictionary, keyed by year, with values of square meters of detected change in that year.
+To visualize the change, first use the `generate_change_map_image` tool with the geometry to get a tile URL pattern. Then, use the `create_interactive_map` tool with that URL pattern to generate and save an interactive map HTML file as an artifact.
+Use the coordinates in the geometry for additional factual evidence of land cover transitions reported to have occurred in the area for the change years.
+To analyze surface temperature, use the `get_average_surface_temperature` tool. You must ask the user for a start date and end date if not provided.
+Report the change years, change areas, temperature analysis, and the other evidence from your analysis to the user. Inform the user that the interactive map has been saved as an artifact.
+"""
+```
+
+### Restart the Agent
+
+Once you have made these changes, you need to restart the agent server to apply them. Use the provided convenience script:
+
+```bash
+./restart_servers.sh
+```
+
+This script will automatically shut down the running instance of the ADK web server and start it again with your new code.
 
 ## Disclaimer
 
