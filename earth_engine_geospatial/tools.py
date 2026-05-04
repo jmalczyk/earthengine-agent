@@ -454,7 +454,7 @@ async def call_geeviz_mcp(tool_name: str, arguments: dict) -> Any:
     Returns:
         Any: The result of the tool call.
     """
-    url = os.environ.get("GEEVIZ_MCP_URL", "http://127.0.0.1:9001/mcp")
+    url = "http://127.0.0.1:9001/mcp"
     async with streamable_http_client(url) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
