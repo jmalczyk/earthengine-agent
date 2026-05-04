@@ -46,7 +46,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
-    --role="roles/earthengine.viewer" || echo "Warning: Failed to grant Earth Engine role."
+    --role="roles/earthengine.writer" || echo "Warning: Failed to grant Earth Engine role."
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
@@ -122,12 +122,30 @@ sed -i "s|GEEVIZ_MCP_URL=.*|GEEVIZ_MCP_URL=\"$GEEVIZ_URL\"|" .env
 echo "GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\"" >> .env
 
 # 7. Start Servers
-echo "Starting ADK web server..."
-echo "Once started, click the Web Preview button in Cloud Shell to access the agent."
-
+echo "Starting geeViz MCP server in the background..."
 export GOOGLE_CLOUD_PROJECT="$PROJECT_ID"
 export GOOGLE_MAPS_API_KEY="$KEY_STRING"
 export GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE"
+
+if [ -d ".venv" ]; then
+    .venv/bin/python3 run_mcp_server.py > mcp_server.log 2>&1 &
+else
+    uv run python3 run_mcp_server.py > mcp_server.log 2>&1 &
+fi
+
+# Wait a bit for the MCP server to start
+echo "Waiting for geeViz MCP server to start (10 seconds)..."
+sleep 10
+
+# Check if it's still running
+if ! pgrep -f "run_mcp_server.py" > /dev/null; then
+    echo "Error: geeViz MCP server failed to start. Check mcp_server.log for details."
+    exit 1
+fi
+
+echo "Starting ADK web server..."
+echo "Once started, click the Web Preview button in Cloud Shell to access the agent."
+echo "IMPORTANT: You must manually replace [PROJECT_HASH] in your .env file with your actual Cloud Shell Web Preview hash for geeViz to work correctly."
 
 if [ -d ".venv" ]; then
     .venv/bin/adk web --allow_origins 'regex:https://.*.cloudshell.dev'
