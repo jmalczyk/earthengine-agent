@@ -27,24 +27,13 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 
 ## Running the Agent
 
-ADK provides convenient ways to bring up agents locally and interact with them.
-You may talk to the agent using the CLI:
+To install and run the agent copy and paste the following into the terminal to the bottom left of the page. 
 
 ```bash
-adk run earth_engine_geospatial
+./startup.sh
 ```
 
-Or on a web interface:
-
-```bash
-adk web
-```
-
-In Google Cloud Shell, you need to handle CORS issues because the web interface is accessed via a Cloud Shell web preview URL. Run the agent using the following command to allow requests from Cloud Shell origins:
-
-```bash
-adk web --allow_origins 'regex:https://.*.cloudshell.dev'
-```
+Once the script completes, click the Web Preview button in the top right corner of Cloud Shell to access the agent.
 
 ### Convenience Script
 
@@ -63,44 +52,26 @@ Select `earth_engine_geospatial` from the dropdown.
 
 ## Example Interaction
 
-Interact with the agent through a chat interface. The agent can answer basic
-questions about land cover change in small to medium sized polygons represented
-as GeoJSON strings. For example, here's a small polygon in the Santa Cruz
-mountains of California, USA:
+Interact with the agent through a chat interface. The agent can answer questions about land cover change in a region. You can specify a location name or provide a GeoJSON geometry.
 
-```
-{"type":"Polygon","coordinates":[[[-122.25468153773132,37.21100075492321],
-[-122.25468153773132,37.186046417670404],[-122.2224950295526,37.186046417670404],
-[-122.2224950295526,37.21100075492321]]],"geodesic":false,"evenOdd":true}
-```
-
-Here is an [example script](https://code.earthengine.google.com/f81c949df0550ef68ea6aca3937ec9bd)
-for generating GeoJSON for your area(s) of interest. Copy the GeoJSON printed
-in the Console of the Earth Engine Code Editor to a chat:
+For example, you can ask about a specific place:
 
 User:
 
-> Please tell me about
-> {"type":"Polygon","coordinates":[[[-122.25468153773132,37.21100075492321],
-> [-122.25468153773132,37.186046417670404],[-122.2224950295526,37.186046417670404],
-> [-122.2224950295526, 37.21100075492321]]],"geodesic":false,"evenOdd":true}.
+> Please tell me about the land cover changes in Santa Cruz, CA.
 
 Agent:
 
-> Based on an analysis of the provided geometry, here are the detected annual
-> changes for the years 2020 and 2021:
+> I have analyzed the area around Santa Cruz, CA.
 >
-> - 2020: 3.45 square kilometers of change were detected.
+> **Annual Change Detected (AlphaEarth):**
+> - 2020: 5.2 sq km
+> - 2021: 3.1 sq km
 >
-> - 2021: 2.74 square kilometers of change were detected.
+> **Land Cover Context (Dynamic World):**
+> In 2020, there was a significant decrease in 'trees' and an increase in 'shrub_and_scrub' and 'bare' ground, suggesting a possible fire event (like the CZU Lightning Complex fire).
 >
-> The provided coordinates are located in the Santa Cruz Mountains of California.
-> The significant changes detected in 2020 are attributed to the CZU Lightning
-> Complex fire, which burned a large area in this region in August 2020. The land
-> cover transitioned from forest and shrubland to a burned landscape.
->
-> The changes detected in 2021 represent post-fire effects, including vegetation
-> regrowth and succession as the ecosystem begins to recover from the fire.
+> I have generated an interactive map detailing the magnitude of change and saved it as an artifact `interactive_map.html`.
 
 ## Customization
 
@@ -171,13 +142,13 @@ async def get_average_surface_temperature(
     return await asyncio.to_thread(mean_temp.getInfo)
 ```
 
-To modify the agent, follow these steps to add the new tool and update the instructions:
+To modify the agent, follow these steps to add the new tool and update the instructions. We have added `"Paste changes here"` comment blocks in the relevant files to make this easier.
 
 #### 1. Add the Tool to `earth_engine_geospatial/tools.py`
-Append the `get_average_surface_temperature` function to the end of the file.
+Append the `get_average_surface_temperature` function to the end of the file, where you see the `# --- PASTE NEW TOOLS HERE ---` comment.
 
 #### 2. Register the Tool in `earth_engine_geospatial/agent.py`
-Add `tools.get_average_surface_temperature` to the `tools` list in the `llm_agent.Agent` initialization:
+Add `tools.get_average_surface_temperature` to the `tools` list in the `llm_agent.Agent` initialization, where you see the `# --- PASTE NEW TOOLS HERE ---` comment:
 
 ```python
     tools=[
@@ -185,12 +156,14 @@ Add `tools.get_average_surface_temperature` to the `tools` list in the `llm_agen
         tools.generate_geojson_for_location,
         tools.generate_change_map_image,
         tools.create_interactive_map,
+        tools.get_dynamic_world_landcover_areas,
+        # --- PASTE NEW TOOLS HERE ---
         tools.get_average_surface_temperature, # Add this line
     ],
 ```
 
 #### 3. Update Prompt in `earth_engine_geospatial/prompt.py`
-Replace the content of `prompt.py` with the following, which adds instructions for the new tool:
+Replace the content of `prompt.py` with the following, or add instructions for the new tool where you see the `# --- PASTE NEW PROMPT INSTRUCTIONS HERE ---` comment:
 
 ```python
 root_agent_prompt = """
@@ -199,22 +172,27 @@ Use the `get_2017_2025_annual_changes` tool to detect annual changes in geometri
 Areas are provided to you as places, regions, or GeoJSON geometries.
 If the user provides a location name instead of GeoJSON, use the `generate_geojson_for_location` tool to get the GeoJSON for that location.
 The outputs from the `get_2017_2025_annual_changes` tool are a dictionary, keyed by year, with values of square meters of detected change in that year.
+Use the `get_dynamic_world_landcover_areas` tool to gather more context about the specific land cover types and their changes over time (2018-2025) within the geometry to explain the nature of the changes.
 To visualize the change, first use the `generate_change_map_image` tool with the geometry to get a tile URL pattern. Then, use the `create_interactive_map` tool with that URL pattern to generate and save an interactive map HTML file as an artifact.
 Use the coordinates in the geometry for additional factual evidence of land cover transitions reported to have occurred in the area for the change years.
 To analyze surface temperature, use the `get_average_surface_temperature` tool. You must ask the user for a start date and end date if not provided.
-Report the change years, change areas, temperature analysis, and the other evidence from your analysis to the user. Inform the user that the interactive map has been saved as an artifact.
+Report the change years, change areas, temperature analysis, land cover transitions, and the other evidence from your analysis to the user. Inform the user that the interactive map has been saved as an artifact.
 """
 ```
 
 ### Restart the Agent
 
-Once you have made these changes, you need to restart the agent server to apply them. Use the provided convenience script:
+Once you have made these changes, you need to restart the agent server to apply them.
+
+If the agent is running in the foreground of your terminal, you can stop it by pressing `Ctrl+C`.
+
+Then, use the provided convenience script to restart it:
 
 ```bash
 ./restart_servers.sh
 ```
 
-This script will automatically shut down the running instance of the ADK web server and start it again with your new code.
+This script will automatically shut down any running background instances of the ADK web server and start it again with your new code.
 
 ## Disclaimer
 

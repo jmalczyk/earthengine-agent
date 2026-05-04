@@ -10,3 +10,5 @@ Use the coordinates in the geometry for additional factual evidence of land cove
 Report the change years, change areas, land cover transitions, and the other evidence from your analysis to the user. Inform the user that the interactive map has been saved as an artifact.
 """
 
+# --- PASTE NEW PROMPT INSTRUCTIONS HERE ---
+

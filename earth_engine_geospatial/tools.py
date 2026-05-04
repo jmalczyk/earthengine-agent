@@ -489,6 +489,8 @@ async def get_dynamic_world_landcover_areas(
         
     return await asyncio.to_thread(combined_dict.getInfo)
 
+# --- PASTE NEW TOOLS HERE ---
+
 
 
 
