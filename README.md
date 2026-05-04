@@ -26,9 +26,9 @@ To install and run the agent copy and paste the following into the terminal to t
 
 Once the script completes, click the Web Preview button in the top right corner of Cloud Shell to access the agent.
 
-### Convenience Script
+### Restarting the Agent
 
-If you need to restart the ADK web server, you can stop it by pressing `Ctrl+C`, then the following commant to restart:
+If you made changes and need to restart the ADK web server, you can stop it by pressing `Ctrl+C`, then the following commant to restart:
 
 ```bash
 ./restart.sh
