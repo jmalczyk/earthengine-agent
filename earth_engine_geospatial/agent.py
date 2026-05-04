@@ -70,6 +70,8 @@ root_agent = llm_agent.Agent(
     tools=[
         tools.get_2017_2025_annual_changes,
         tools.generate_geojson_for_location,
+        tools.generate_change_map_image,
+        tools.create_interactive_map,
     ],
 
     instruction=prompt.root_agent_prompt,
