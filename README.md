@@ -49,7 +49,6 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
    Fill in the following variables in `.env`:
    * `GOOGLE_CLOUD_PROJECT`: Your Google Cloud Project ID.
    * `GOOGLE_MAPS_API_KEY`: Your Google Maps API key (with Geocoding and Maps JavaScript APIs enabled).
-   * `GEEVIZ_MCP_URL`: The URL for the geeViz MCP server. If you are using Google Cloud Shell, set this to the web preview URL for port 9001 (e.g., `https://9001-cs-[PROJECT_HASH].cloudshell.dev/mcp`) to ensure access through the web preview.
 
 
    Authenticate:
@@ -163,13 +162,13 @@ adk web --allow_origins 'regex:https://.*.cloudshell.dev'
 
 ### Convenience Script
 
-If you need to restart the servers (both the geeViz MCP server and the ADK web server), you can use the provided convenience script:
+If you need to restart the ADK web server, you can use the provided convenience script:
 
 ```bash
 ./restart_servers.sh
 ```
 
-This script will kill any running instances of the servers and start them again.
+This script will kill any running instances of the ADK web server and start it again.
 
 This flag tells the ADK web server to accept requests from your Cloud Shell instance, preventing CORS blocked errors in the browser.
 

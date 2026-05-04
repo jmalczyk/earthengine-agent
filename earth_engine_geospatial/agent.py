@@ -70,9 +70,6 @@ root_agent = llm_agent.Agent(
     tools=[
         tools.get_2017_2025_annual_changes,
         tools.generate_geojson_for_location,
-        tools.visualize_change_with_geeviz,
-        tools.visualize_data_with_geeviz,
-        tools.call_geeviz_mcp,
     ],
 
     instruction=prompt.root_agent_prompt,
