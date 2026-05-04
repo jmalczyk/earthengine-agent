@@ -375,7 +375,12 @@ async def get_2017_2025_annual_changes(
     else:
         region = geometry
 
-    scale = 10
+    # Check area size (max 100,000 sq km)
+    area = await asyncio.to_thread(region.area().getInfo)
+    if area > 100000 * 1000000:
+        raise ValueError(f"Area is too large ({area / 1000000:.2f} sq km). Maximum allowed is 100,000 sq km.")
+
+    scale = 20
     while scale <= 1000:
         try:
             return await asyncio.to_thread(get_annual_change_dictionary(region, scale).getInfo)
@@ -457,6 +462,11 @@ async def get_dynamic_world_landcover_areas(
         region = ee.Geometry(json.loads(geometry))
     else:
         region = geometry
+
+    # Check area size (max 100,000 sq km)
+    area = await asyncio.to_thread(region.area().getInfo)
+    if area > 100000 * 1000000:
+        raise ValueError(f"Area is too large ({area / 1000000:.2f} sq km). Maximum allowed is 100,000 sq km.")
 
     def get_dw_areas_for_year(year: int, region: ee.Geometry) -> ee.Dictionary:
         dw = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1")
