@@ -128,13 +128,20 @@ export GOOGLE_MAPS_API_KEY="$KEY_STRING"
 export GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE"
 
 if [ -d ".venv" ]; then
-    .venv/bin/python3 run_mcp_server.py &
+    .venv/bin/python3 run_mcp_server.py > mcp_server.log 2>&1 &
 else
-    uv run python3 run_mcp_server.py &
+    uv run python3 run_mcp_server.py > mcp_server.log 2>&1 &
 fi
 
 # Wait a bit for the MCP server to start
-sleep 5
+echo "Waiting for geeViz MCP server to start (10 seconds)..."
+sleep 10
+
+# Check if it's still running
+if ! pgrep -f "run_mcp_server.py" > /dev/null; then
+    echo "Error: geeViz MCP server failed to start. Check mcp_server.log for details."
+    exit 1
+fi
 
 echo "Starting ADK web server..."
 echo "Once started, click the Web Preview button in Cloud Shell to access the agent."
