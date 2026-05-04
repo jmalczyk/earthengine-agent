@@ -16,9 +16,21 @@ if [ ! -d ".git" ]; then
 fi
 
 # 1. Get Project ID
-if [ -z "$PROJECT_ID" ]; then
-    echo "PROJECT_ID not set. Detecting project ID..."
+CURRENT_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+
+if [ -z "$CURRENT_GCLOUD_PROJECT" ]; then
+    echo "Project not set in gcloud. Detecting project ID..."
     PROJECT_ID=$(gcloud projects list --format="value(projectId)" | grep -v "qwiklabs-resources" | head -n 1)
+    
+    if [ -n "$PROJECT_ID" ]; then
+        echo "Setting gcloud project to: $PROJECT_ID"
+        gcloud config set project "$PROJECT_ID"
+    else
+        echo "Error: Could not detect a valid project ID."
+        exit 1
+    fi
+else
+    PROJECT_ID="$CURRENT_GCLOUD_PROJECT"
 fi
 echo "Using Project ID: $PROJECT_ID"
 
