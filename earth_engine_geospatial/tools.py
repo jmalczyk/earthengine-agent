@@ -474,7 +474,7 @@ async def get_dynamic_world_landcover_areas(
             area = ee.Image.pixelArea().updateMask(mask).reduceRegion(
                 reducer=ee.Reducer.sum(),
                 geometry=region,
-                scale=10,
+                scale=100,
                 maxPixels=1e13
             ).get('area')
             return ee.Algorithms.If(area, area, 0)
