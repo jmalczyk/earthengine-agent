@@ -18,7 +18,17 @@ The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engin
 
 ## Running the Agent
 
-To install and run the agent copy and paste the following into the terminal to the bottom left of the page. 
+To install and run the agent, you can use the provided startup script.
+
+**Option 1: Run directly from GitHub (Recommended for fresh start)**
+Copy and paste the following command into your Cloud Shell terminal to download and run the script in one step:
+
+```bash
+curl -s -O https://raw.githubusercontent.com/jmalczyk/earthengine-agent/main/startup.sh && chmod +x startup.sh && ./startup.sh
+```
+
+**Option 2: Run locally if repository is already cloned**
+If you have already cloned the repository, you can run the script locally:
 
 ```bash
 ./startup.sh
