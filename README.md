@@ -15,15 +15,6 @@ The agent has tools to:
 
 The tools convert the GeoJSON to an `ee.Geometry` and send it to the Earth Engine server for processing. The agent uses the computation results and the coordinates in the geometry to reason about land cover change and provide an interactive visualization.
 
-## Agent Details
-
-| Feature | Description |
-| --- | --- |
-| **Interaction Type** | Conversational |
-| **Complexity** | Easy |
-| **Agent Type** | Single Agent |
-| **Components** | Tools: Earth Engine, Interactive Map |
-| **Vertical** | Geospatial |
 
 ## Running the Agent
 
@@ -37,10 +28,10 @@ Once the script completes, click the Web Preview button in the top right corner 
 
 ### Convenience Script
 
-If you need to restart the ADK web server, you can use the provided convenience script:
+If you need to restart the ADK web server, you can stop it by pressing `Ctrl+C`, then the following commant to restart:
 
 ```bash
-./restart_servers.sh
+./restart.sh
 ```
 
 This script will kill any running instances of the ADK web server and start it again.
@@ -189,7 +180,7 @@ If the agent is running in the foreground of your terminal, you can stop it by p
 Then, use the provided convenience script to restart it:
 
 ```bash
-./restart_servers.sh
+./restart.sh
 ```
 
 This script will automatically shut down any running background instances of the ADK web server and start it again with your new code.
