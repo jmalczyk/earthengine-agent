@@ -67,6 +67,18 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SA_EMAIL" \
     --role="roles/serviceusage.serviceUsageConsumer" || echo "Warning: Failed to grant Service Usage Consumer role."
 
+# Create custom role for prediction if needed (fallback)
+echo "Creating custom role for prediction..."
+gcloud iam roles create ee_agent_predictor --project=$PROJECT_ID \
+    --title="EE Agent Predictor" \
+    --description="Allows prediction on Vertex AI endpoints" \
+    --permissions="aiplatform.endpoints.predict" \
+    --stage="GA" || echo "Warning: Failed to create custom role (it may already exist or you lack permissions)."
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="projects/$PROJECT_ID/roles/ee_agent_predictor" || echo "Warning: Failed to grant custom role."
+
 echo "Waiting for IAM role propagation (60 seconds)..."
 sleep 5
 
