@@ -72,6 +72,7 @@ root_agent = llm_agent.Agent(
         tools.generate_geojson_for_location,
         tools.generate_change_map_image,
         tools.create_interactive_map,
+        tools.get_dynamic_world_landcover_areas,
     ],
 
     instruction=prompt.root_agent_prompt,

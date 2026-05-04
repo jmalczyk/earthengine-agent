@@ -441,6 +441,55 @@ async def generate_geometry_for_location(location: str) -> ee.Geometry:
     return ee.Geometry(json.loads(geojson_str))
 
 
+@retry_async.AsyncRetry(deadline=60)
+async def get_dynamic_world_landcover_areas(
+    geometry: ee.Geometry | str,
+) -> dict[str, Any]:
+    """Measures land cover area by type using Dynamic World dataset for years 2018-2025.
+
+    Args:
+        geometry (ee.Geometry | str): An Earth Engine geometry object or a JSON string representing a GeoJSON geometry.
+
+    Returns:
+        A dictionary keyed by year, where each value is a dictionary of land cover types and their areas in square meters.
+    """
+    if isinstance(geometry, str):
+        region = ee.Geometry(json.loads(geometry))
+    else:
+        region = geometry
+
+    def get_dw_areas_for_year(year: int, region: ee.Geometry) -> ee.Dictionary:
+        dw = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1")
+        start_date = ee.Date.fromYMD(year, 1, 1)
+        end_date = ee.Date.fromYMD(year, 12, 31)
+        
+        year_collection = dw.filterBounds(region).filterDate(start_date, end_date)
+        mode_image = year_collection.select('label').mode()
+        
+        classes = ['water', 'trees', 'grass', 'flooded_vegetation', 'crops', 'shrub_and_scrub', 'built', 'bare', 'snow_and_ice']
+        
+        def compute_class_area(class_idx):
+            class_idx = ee.Number(class_idx)
+            mask = mode_image.eq(class_idx)
+            area = ee.Image.pixelArea().updateMask(mask).reduceRegion(
+                reducer=ee.Reducer.sum(),
+                geometry=region,
+                scale=10,
+                maxPixels=1e13
+            ).get('area')
+            return ee.Algorithms.If(area, area, 0)
+            
+        areas_list = ee.List.sequence(0, 8).map(compute_class_area)
+        return ee.Dictionary.fromLists(classes, areas_list)
+
+    combined_dict = ee.Dictionary()
+    for year in range(2018, 2026):
+        year_dict = get_dw_areas_for_year(year, region)
+        combined_dict = combined_dict.set(str(year), year_dict)
+        
+    return await asyncio.to_thread(combined_dict.getInfo)
+
+
 
 
 
